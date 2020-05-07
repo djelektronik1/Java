@@ -16,7 +16,7 @@ public class Employe
         this.days = days;
     }
 
-    public Employe()
+    public Employe() 
 	{
         this.account = "";
         this.transport = 0;
@@ -58,8 +58,7 @@ public class Employe
         return transport + DAILY_RATE * days;
     }
 
-    public void show() 
-	{
+    public void show() {
         System.out.println("daily rate: " + convertMoney(DAILY_RATE));
         System.out.println("account: " + account);
         System.out.println("transport: " + convertMoney(transport));
