@@ -1,53 +1,48 @@
-import by.gsu.pms.DiscountPurchase;
-import by.gsu.pms.PercentPurchase;
-import by.gsu.pms.Purchase;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Scanner;
+import by.gsu.pms.*;
+
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class Runner 
 {
-    public static void main(String[] args) throws IOException 
+    public static void main(String[] args) 
 	{
-        Purchase[] purchases = new  Purchase[6];
-        FileReader fileReader = new FileReader("src/in.txt");
-        Scanner sc = new Scanner(fileReader);
+        Commodity yandex = new Commodity("yandex", 2.50);
+        Commodity google = new Commodity("google", 3);
 
-        double maxCost = 0;
-        Purchase maxPurchase = new Purchase();
+        AbstractPurchase[] purchases = new AbstractPurchase[6];
+        purchases[0] = new PurchasePriceDiscount(yandex, 7, 0.5);
+        purchases[1] = new PurchasePriceDiscount(google, 9, 0.2);
+        purchases[2] = new PurchasePercentDiscount(yandex, 3, 30);
+        purchases[3] = new PurchasePercentDiscount(google, 12, 25);
+        purchases[4] = new PurchaseTransportExpenses(yandex, 8, 18);
+        purchases[5] = new PurchaseTransportExpenses(google, 4, 14);
 
-        for (int i=0; i<purchases.length; i++)
+        for (AbstractPurchase purchase : purchases) 
 		{
-            Purchase purchase = purchases[i];
-            String[] st = sc.nextLine().split(" ");
-            String type = st[0];
-            String name = st[1];
-            int price = Integer.parseInt(st[2]);
-            int count = Integer.parseInt(st[3]);
+            System.out.println(purchase);
+        }
 
-            switch (type)
-			{
-                case ("Purchase"):
-                    purchases[i] = new Purchase(name, price, count);
-                    break;
-                case ("Discount"):
-                    purchases[i] = new DiscountPurchase(name, price, count);
-                    break;
-                case ("GeneralDiscount"):
-                    purchases[i] = new PercentPurchase(name, price, count);
-                    break;
-            }
-            System.out.println(purchases[i]);
+        Arrays.sort(purchases, Comparator.comparing(AbstractPurchase::getCost));
 
-            if (purchases[i].getCost() > maxCost)
+        System.out.println("\nSorted by cost: ");
+        for (AbstractPurchase purchase : purchases) 
+		{
+            System.out.println(purchase);
+        }
+
+        double minCost = purchases[0].getCost();
+        for (AbstractPurchase purchase : purchases) 
+		{
+            if (purchase.getCost() < minCost) 
 			{
-                maxCost = purchases[i].getCost();
-                maxPurchase = purchases[i];
+                minCost = purchase.getCost();
             }
         }
-        fileReader.close();
+        System.out.println("\nMin cost = " + minCost);
 
-        System.out.println("Max cost: " + maxCost);
+
     }
 
 }
+
