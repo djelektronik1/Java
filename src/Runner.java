@@ -1,42 +1,53 @@
-import by.gsy.pms.Employe;
-
-import java.io.FileNotFoundException;
+import by.gsu.pms.DiscountPurchase;
+import by.gsu.pms.PercentPurchase;
+import by.gsu.pms.Purchase;
 import java.io.FileReader;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Runner 
 {
-    public static void main(String[] args) throws FileNotFoundException 
+    public static void main(String[] args) throws IOException 
 	{
-        FileReader file = new FileReader("src/in.txt");
-			Scanner sc = new Scanner(file);
+        Purchase[] purchases = new  Purchase[6];
+        FileReader fileReader = new FileReader("src/in.txt");
+        Scanner sc = new Scanner(fileReader);
 
-        double dailyRate = Double.parseDouble(sc.nextLine().split("=")[1]);
-		
-			int[] indices = Arrays.stream (sc.nextLine().split("=")[1].split(";")).mapToInt(Integer::parseInt).toArray();
+        double maxCost = 0;
+        Purchase maxPurchase = new Purchase();
 
-        Employe[] employes = new Employe[indices.length];
-		
-		
-		
-        for (int i=0; i<indices.length; i++)
+        for (int i=0; i<purchases.length; i++)
 		{
-            String account = sc.nextLine().split("=")[1];
-            int transport = Integer.parseInt(sc.nextLine().split("=")[1]);
-            int days = Integer.parseInt(sc.nextLine().split("=")[1]);
+            Purchase purchase = purchases[i];
+            String[] st = sc.nextLine().split(" ");
+            String type = st[0];
+            String name = st[1];
+            int price = Integer.parseInt(st[2]);
+            int count = Integer.parseInt(st[3]);
 
-            employes[i] = new Employe(account, transport, days);
+            switch (type)
+			{
+                case ("Purchase"):
+                    purchases[i] = new Purchase(name, price, count);
+                    break;
+                case ("Discount"):
+                    purchases[i] = new DiscountPurchase(name, price, count);
+                    break;
+                case ("GeneralDiscount"):
+                    purchases[i] = new PercentPurchase(name, price, count);
+                    break;
+            }
+            System.out.println(purchases[i]);
 
+            if (purchases[i].getCost() > maxCost)
+			{
+                maxCost = purchases[i].getCost();
+                maxPurchase = purchases[i];
+            }
         }
-		
-		
-        Arrays.sort(employes, Comparator.comparing(Employe::getTotal).reversed());
+        fileReader.close();
 
-        for (Employe employe: employes)
-		{
-            employe.show();
-        }
+        System.out.println("Max cost: " + maxCost);
     }
+
 }
